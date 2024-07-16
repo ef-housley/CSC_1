@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cod SQL</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+body {
+  background-image: url('2.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;	
+  text-decoration: none;
+  outline: none;
+  color: ##8ba811;
+  background-color: #cbed6e;
+  border: solid;
+  border-radius: 45px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #cbed6e}
+
+.button:active {
+  background-color: #cbed6e;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+div {
+    width: 1200px;
+    padding: 15px;
+    <!-- border: 25px groove; -->
+    margin: 30px;
+    text-align: center;
+}
+p {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 30px;
+}
+
+table {
+    text-align:center;
+    margin: auto;
+    border: none;
+    border-color: black;
+}
+th {
+    background-color: #cbed6e;
+    color: black;
+    border: 3px;
+}
+td{
+    border: solid 1px;
+    border-color: black;
+    width: auto;
+    margin: 5px;
+}
+tr{
+    text-align: center;
+    margin: 5px;
+    
+}
+
+</style> 
+    </head>
+    <body>
+        <div>
+            <p style="font-size: 30px; text-align: center">Codul SQL folosit</p> 
+            <p style="text-align: center"> 
+--------Subiectul 13------ 
+<br> codul pentru sql partial colocviu si aplicatie
+<br> -----13.01-----
+<br> Se creaza tabelele Furnizori, Piese, Catalog si Comenzi
+<br>---a---
+<br>CREATE TABLE Furnizori
+(idf INT(5), numef VARCHAR2(50), adresa VARCHAR2(50));
+<br>---b---
+<br>CREATE TABLE piese
+(idp INT(5),numep VARCHAR(25), culoare VARCHAR(50)
+);
+<Br>---c---
+<br>CREATE TABLE catalog
+(idf INT(5),idp INT(5),pret VARCHAR(30));
+<br>---d---
+<br>CREATE TABLE comenzi
+(idc INT(5),idf INT(5),idp INT(5),cantitate INT(5));
+<br>---e--- 
+<br> să se declare cheile primare şi străine
+<br>ALTER TABLE furnizori
+ADD CONSTRAINT c_furnizori_pk PRIMARY KEY(idf);
+ALTER TABLE piese
+ADD CONSTRAINT c_piese_pk PRIMARY KEY(idp);
+<br>---f---
+<br> modificare definiţie tabelă Catalog pentru a adăuga coloana moneda
+<br>ALTER TABLE catalog
+ADD CONSTRAINT c_catalog_fk_idf FOREIGN KEY(idf) REFERENCES furnizori(idf);
+ALTER TABLE catalog
+ADD CONSTRAINT c_catalog_fk_idp FOREIGN KEY(idp) REFERENCES piese(idp);
+ALTER TABLE comenzi
+ADD CONSTRAINT c_comenzi_pk PRIMARY KEY(idc);
+ALTER TABLE comenzi
+ADD CONSTRAINT c_comenzi_fk_idf FOREIGN KEY(idf) REFERENCES furnizori(idf);
+ALTER TABLE comenzi
+ADD CONSTRAINT c_comenzi_fk_idp FOREIGN KEY(idp) REFERENCES piese(idp);
+ALTER TABLE catalog
+ADD(currency VARCHAR(5));
+<br>---Introducere date---
+<Br>INSERT INTO piese VALUES(100, 'piulita', 'negru');
+<Br>INSERT INTO piese VALUES(101, 'suruburi', 'alb');
+<br>INSERT INTO piese VALUES(102, 'ciocan', 'maro');
+<br>INSERT INTO piese VALUES(103, 'masa', 'maro');
+<br>INSERT INTO piese VALUES(105, 'lingurita', 'galben');
+<br>INSERT INTO furnizori VALUES(1, 'Kevin', '13 Backstreet,Barba');
+<br>INSERT INTO furnizori VALUES(2, 'Taylor', '60 Locsta,Barba');
+<br>INSERT INTO furnizori VALUES(3, 'Swift', '11 Akaltyn,Barba');
+<br>INSERT INTO furnizori VALUES(4, 'John Doe SRL', '23 observator');
+<br>INSERT INTO furnizori VALUES(5, 'Damad Kelle', '112 Dejland Berkan');
+<br>INSERT INTO catalog VALUES(1, 100, 23,'RON');
+<br>INSERT INTO catalog VALUES(2, 101, 34,'USD');
+<br>INSERT INTO catalog VALUES(1, 102, 15,'EUR');
+<br>INSERT INTO catalog VALUES(3, 104, 2125, 'RON');
+<br>INSERT INTO catalog VALUES(4, 103, 3469, 'USD');
+<br>INSERT INTO catalog VALUES(4, 103, 2469, 'EUR');
+<br>INSERT INTO comenzi VALUES(200, 1, 100, 230);
+<br>INSERT INTO comenzi VALUES(201,2, 101, 340);
+<br>INSERT INTO comenzi VALUES(202,2, 102, 715);
+<br>INSERT INTO Comenzi (idc, idf, idp, cantitate) VALUES (13, 12, 11, 14);
+<br>INSERT INTO Comenzi (idc, idf, idp, cantitate) VALUES (13, 15, 11, 16);
+<br>INSERT INTO Comenzi (idc, idf, idp, cantitate) VALUES (16, 15, 11, 2);
+
+
+<br>-----13.02----
+<br>Adaugarea Constrangerilor
+<br>---a---
+<br>ALTER TABLE catalog ADD constraint c_currency_ck CHECK(currency='USD' OR currency='EUR' OR currency='RON');
+<br>---b---
+<br>ALTER TABLE piese ADD constraint c_culoare_ck CHECK( culoare != 'negru'or numep LIKE '%piulita%');
+
+<br>-----13.03----
+<br> găsească numele pieselor și culoarea
+<br>---a---
+<br>Select culoare,numep
+from piese 
+where numep like '_a%';
+<br>---b---
+<br>select *
+from furnizori
+where adresa like'%Dej%'
+order by adresa;
+
+<br>-----13.04-----
+<br>---a---
+<br>select numef,numep,pret,cantitate
+from piese NATURAL JOIN furnizori NATURAL JOIN catalog NATURAL JOIN comenzi
+where pret=35 and currency='EUR';
+<br>---b---
+<br>na-am inteles
+
+<br>-----13.05-----
+<br>---a---
+<br>SELECT numef
+FROM Furnizori f
+WHERE EXISTS (
+   SELECT *
+   FROM Comenzi c
+   WHERE c.idf = f.idf
+   AND EXISTS (
+      SELECT *
+      FROM Furnizori f2
+      WHERE f2.numef = 'John Doe SRL'
+      AND f2.idf = c.idf
+   )
+);
+<br>---b---
+<br>SELECT Piese.numep FROM Piese
+WHERE NOT EXISTS (
+SELECT * FROM Comenzi
+WHERE Comenzi.idp = Piese.idp AND Comenzi.cantitate < (
+SELECT cantitate FROM Comenzi WHERE Comenzi.idp = Piese.idp
+)
+);
+
+<br>-----13.06-----
+<br>---a---
+<br>SELECT idc, currency, MIN(pret) AS pret_min, AVG(pret) AS pret_med, MAX(pret) AS pret_max
+FROM Catalog
+INNER JOIN Comenzi ON Catalog.idf = Comenzi.idf AND Catalog.idp = Comenzi.idp
+GROUP BY idc, curremcy;
+<br>---b---
+<br>SELECT idf, idp, SUM(cantitate) AS total_piese
+FROM Comenzi
+GROUP BY idf, idp;
+
+            </p>
+            <a href="index.html" class="button">Inapoi</a>
+        </div>
+    </body>
+</html>

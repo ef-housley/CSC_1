@@ -1,0 +1,242 @@
+13.01
+---------------------------------------
+a)
+CREATE TABLE furnizori
+(idf NUMBER(5,0), numef VARCHAR2(50), adresa VARCHAR2(50));
+
+b)
+CREATE TABLE piese
+(idp NUMBER(5,0),numep VARCHAR2(25), culoare VARCHAR2(50)
+);
+
+c)
+CREATE TABLE catalog
+(idf NUMBER(5,0),idp NUMBER(5,0),pret VARCHAR2(30));
+
+d)
+CREATE TABLE comenzi
+(idc NUMBER(5,0),idf NUMBER(5,0),idp NUMBER(5,0),cantitate NUMBER(5,0));
+
+e)
+ALTER TABLE furnizori
+ADD CONSTRAINT c_furnizori_pk PRIMARY KEY(idf);
+
+ALTER TABLE piese
+ADD CONSTRAINT c_piese_pk PRIMARY KEY(idp);
+
+ALTER TABLE catalog
+ADD CONSTRAINT c_catalog_fk FOREIGN KEY(idf) REFERENCES furnizori(idf)
+ADD CONSTRAINT c_catalog_fk FOREIGN KEY(idp) REFERENCES piese(idp);
+
+ALTER TABLE comenzi
+ADD CONSTRAINT c_comenzi_pk PRIMARY KEY(idc)
+ADD CONSTRAINT c_comenzi_fk FOREIGN KEY(idf) REFERENCES furnizori(idf)
+ADD CONSTRAINT c_comenzi_fk FOREIGN KEY(idp) REFERENCES piese(idp);
+
+f)
+ALTER TABLE catalog
+ADD(currency VARCHAR2(5);
+
+-----------------------------------
+13.02
+-----------------------------------
+a)
+ALTER TABLE catalog
+ADD constraint c_currency_ck CHECK(currency LIKE 'USD' OR 'EUR' OR 'RON');
+
+b)
+ALTER TABLE catalog
+ADD constraint c_culoare_ck CHECK((culoare = 'negru') AND (numep = 'piulita'));
+
+--------------------------------------------
+
+BEGIN
+INSERT INTO furnizori
+VALUES(1, 'Kevin', '13 Backstreet,Barba');
+INSERT INTO furnizori
+VALUES(2, 'Taylor', '60 Locsta,Barba');
+INSERT INTO furnizori
+VALUES(3, 'Swift', '11 Akaltyn,Barba');
+INSERT INTO furnizori
+VALUES(4, 'John Doe SRL', '23 observator');
+END;
+
+BEGIN
+INSERT INTO piese
+VALUES(100, 'piulita', 'negru');
+INSERT INTO piese
+VALUES(101, 'suruburi', 'alb');
+INSERT INTO piese
+VALUES(102, 'ciocan', 'maro');
+END;
+
+BEGIN
+INSERT INTO catalog
+VALUES(1, 100, 123);
+INSERT INTO catalog
+VALUES(2, 101, 34);
+INSERT INTO catalog
+VALUES(1, 102, 125);
+END;
+
+BEGIN
+INSERT INTO comenzi
+VALUES(200, 1, 100, 230);
+INSERT INTO comenzi
+VALUES(201,2, 101, 340);
+INSERT INTO comenzi
+VALUES(202,2, 102, 715);
+END;
+
+BEGIN
+INSERT INTO furnizori
+VALUES(4, 'John Doe SRL', '23 observator');
+END;
+-------------------------------------
+13.03
+
+INSERT INTO piese
+VALUES(103, 'masa', 'maro');
+INSERT INTO piese
+VALUES(105, 'lingurita', 'galben');
+
+a)
+SELECT numep, culoare
+FROM piese
+WHERE numep LIKE '_a%'
+
+--ORDERED BY numep, culoare DESC;
+
+b)
+INSERT INTO furnizori
+VALUES(5, 'Damad Kelle', '112 Dejland Berkan');
+
+select *
+from furnizori
+where adresa like'%Dej%'
+order by adresa;
+
+-----------------------------------------
+13.04
+
+a) 
+SELECT c.pret, o.cantitate, f.numef, p.numep
+FROM catalog c, comenzi o, furnizori f, piese p 
+WHERE c.pret > 35 AND (c.idf = f.idf OR o.idp = p.idp);
+---------------------
+select numef,numep,pret,cantitate
+from piese NATURAL JOIN furnizori NATURAL JOIN catalog NATURAL JOIN comenzi
+where pret=35 and currency='EUR';
+----------------------
+
+b)
+SELECT p.idf, c.idf, f.numef, p.numep
+
+--messed up
+
+---------------------------------------------
+13.05
+
+BEGIN
+INSERT INTO furnizori
+VALUES(4, 'John Doe SRL', '23 observator');
+END;
+
+a)
+
+SELECT numef
+FROM Furnizori f
+WHERE EXISTS (
+   SELECT *
+   FROM Comenzi c
+   WHERE c.idf = f.idf
+   AND EXISTS (
+      SELECT *
+      FROM Furnizori f2
+      WHERE f2.numef = 'John Doe S.R.L.'
+      AND f2.idf = c.idf
+   )
+);
+
+b)
+
+SELECT Piese.numep FROM Piese
+WHERE NOT EXISTS (
+SELECT * FROM Comenzi
+WHERE Comenzi.idp = Piese.idp AND Comenzi.cantitate < (
+SELECT cantitate FROM Comenzi WHERE Comenzi.idp = Piese.idp
+)
+);
+---------------------------------------------
+SELECT p.numep, o.cantitate FROM piese p, comenzi o
+                             WHERE NOT EXISTS (
+                             SELECT * FROM Comenzi
+                             WHERE Comenzi.cantitate < (
+                             SELECT cantitate FROM Comenzi WHERE Comenzi.idp = p.idp
+                             )
+                             );
+---------------------------------------------
+13.06
+
+a) SELECT idc, currency, MIN(pret) AS pret_min, AVG(pret) AS pret_med, MAX(pret) AS pret_max
+FROM Catalog
+INNER JOIN Comenzi ON Catalog.idf = Comenzi.idf AND Catalog.idp = Comenzi.idp
+GROUP BY idc,currency;
+
+b) SELECT idf, idp, SUM(cantitate) AS total_piese
+FROM Comenzi
+GROUP BY idf, idp;
+
+---------------------------------------------
+13.07
+
+a)
+INSERT INTO Comenzi (idc, idf, idp, cantitate)
+VALUES (13, 12, 11, 14);
+
+INSERT INTO Comenzi (idc, idf, idp, cantitate)
+VALUES (13, 15, 11, 16);
+
+b)
+DELETE FROM Furnizori
+WHERE idf NOT IN (SELECT DISTINCT idf FROM Catalog);
+
+c)
+INSERT INTO catalog
+VALUES(3, 104, 2125);
+INSERT INTO catalog
+VALUES(4, 103, 3469);
+INSERT INTO catalog
+VALUES(4, 103, 2469);
+
+UPDATE Catalog
+SET pret=pret*0.99
+WHERE idp IN (SELECT idp FROM Comenzi GROUP BY idp HAVING SUM(cantitate)>5000);
+
+------------------------------------------------
+13.08
+
+CREATE TRIGGER check_lowest_price
+BEFORE INSERT ON Comenzi
+FOR EACH ROW
+BEGIN
+  DECLARE lowest_price DECIMAL;
+  SELECT MIN(pret) INTO lowest_price FROM Catalog WHERE idp=NEW.idp;
+  IF NOT EXISTS (SELECT * FROM Catalog WHERE idp=NEW.idp AND idf=NEW.idf AND pret=lowest_price) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT=' piesa pentru care se face comanda este de la furnizorul ce oferă prețul cel mai mic.';
+  END IF;
+END;
+
+----------------------------------
+INSERT INTO Comenzi (idc, idf, idp, cantitate)
+VALUES (16, 15, 11, 2);
+----------------------------------
+
+CREATE TRIGGER prevent_color_update
+BEFORE UPDATE ON Piese
+FOR EACH ROW
+BEGIN
+  IF NEW.culoare <> OLD.culoare AND EXISTS (SELECT * FROM Comenzi WHERE idp=OLD.idp) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Nu se poate actualiza culoarea unei piese daca exista comenzi pentru piesa.';
+  END IF;
+END;

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Main Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+		
+body {
+  background-image: url('2.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;	
+  text-decoration: none;
+  outline: none;
+  color: ##8ba811;
+  background-color: #cbed6e;
+  border: solid;
+  border-radius: 45px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #cbed6e}
+
+.button:active {
+  background-color: #cbed6e;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+div {
+    width: 1200px;
+    padding: 15px;
+    <!-- border: 25px groove; -->
+    margin: 30px;
+    text-align: center;
+}
+p {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 30px;
+}
+
+
+
+table {
+    text-align:center;
+    margin: auto;
+    border: none;
+    border-color: black;
+}
+th {
+    background-color: #cbed6e;
+    color: black;
+    border: 3px;
+}
+td{
+    border: solid 1px;
+    border-color: black;
+    width: auto;
+    margin: 5px;
+}
+tr{
+    text-align: center;
+    margin: 5px;
+    
+}
+
+</style> 
+    </head>
+    <body>
+        <div> 
+		<?php include("Ex3a.php"); ?>
+		
+            <p style="">Subiectul 13</p> 
+            <a href="View.html" class="button">vezi tabele</a>
+            <a href="codsql.html" class="button">Cod SQL</a>   
+            <a href="documentatie.html" class="button">Documentatie</a> 
+            <p>Interogarile SELECT</p>
+            <a href="Ex3a.php" class="button">Exercitiul 3.a</a> 
+			
+            <a href="Ex3b.php" class="button">Exercitiul 3.b</a>  
+            <br><br>
+            <a href="Ex4a.php" class="button">Exercitiul 4.a</a>  
+            <a href="Ex4b.php" class="button">Exercitiul 4.b</a> 
+            <br><br>
+            <a href="Ex5a.php" class="button">Exercitiul 5.a</a>  
+            <a href="Ex5b.php" class="button">Exercitiul 5.b</a>
+            <br><br>
+            <a href="Ex6a.php" class="button">Exercitiul 6.a</a> 
+            <a href="Ex6b.php" class="button">Exercitiul 6.b</a>
+            <br><br>
+        </div>
+    </body>
+</html>
